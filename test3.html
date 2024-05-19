@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script type="text/javascript">
+    var printerList = {};
+    var socket = new WebSocket('ws://127.0.0.1:5000');
+
+    socket.onopen = () => {
+        console.log(`ws链接成功！`);
+
+    };
+
+    socket.onmessage = (event) => {
+        console.log(`接收到服务器发送的数据：${event.data}`);
+        const result = JSON.parse(event.data);
+        if (result.cmd == "getPrinters") {
+            printerList = result.printers;
+            document.getElementById("printerList").innerHTML = JSON.stringify(printerList)
+        }
+    };
+
+    socket.onerror = (error) => {
+        console.error(`WebSocket连接发生错误：${error}`);
+    };
+
+    socket.onclose = () => {
+        console.log('WebSocket连接已关闭');
+    };
+
+    function getPrinterList() {
+        //获取本地打印机列表
+        let data = {
+            cmd: "getPrinters",
+            version: "1.0",
+        };
+        this.socket.send(JSON.stringify(data));
+    }
+
+    // 生成一个范围在[min, max]之间的随机整数
+    function getRandomStr() {
+        var min = 100000000;
+        var max = 999999999;
+        var randomArray = new Uint32Array(1);
+        window.crypto.getRandomValues(randomArray);
+        var x = Math.floor((randomArray[0] / (Math.pow(2, 32) - 1)) * (max - min + 1)) + min;
+        return "ddds-" + x;
+    }
+    function generateUUID() {
+        const timestamp = new Date().getTime();
+        const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = (timestamp + Math.random() * 16) % 16 | 0;
+            timestamp = Math.floor(timestamp / 16);
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    }
+
+    function print() {
+        console.log('开始打印！')
+        let orderList = [
+            { orderSn: 'John', trackingNumber: '',templateUrl:'',userid:'' },
+            { name: 'Doe', age: 25 },
+            { name: 'Alice', age: 35 }
+        ];
+
+        var taskId = getRandomStr();
+        var requestId = generateUUID();
+
+        let data = {
+            "ERPId": 303379400,
+            "cmd": "print",
+            "requestID": requestId,
+            "task": {
+                "documents": [
+                    {
+                        "contents": [
+                            {
+                                "addData": {},
+                                "encryptedData": "nCGXTLX57Gy747SrsozPkywPsv/CN4Dg93AB5VW7aOYlGo3aM7Dwcs/BWlGXR1RgqBcwYX48IxuIV92pu3/4NtLo0Rv5GOfoOBo6a/0mCWt4PdPoftBoZFLWLllEyiEc4cdPElqaHDWo/lLLQLP9CF35pD1bnQtI7T4Gg7/KjPjxzlBdIfaUum/bjUf03Wxg/qH8qXpg/scfn0tMA6nFQ4gA8Awh45sRIAEVGbf1TPKuU0u+JjWeh5YJEDZTLAmOF6Z0ytCyWgNyQA5T8XKnmn8I7C6TpuxDjKquEe8HqSc1hVY3TieQL15RdYS9mXX+rQKI3Q/cibwbPu1Eb8ssz9vw4DqH828sxM7uQg5+aQpKAGQA4szFZVezQJ7hZyp7yu5nxPces/r3qZR6VnDgciCK/UAKCljGMZ9Sc7Ix4avDOgsDGqodtv26GQX7wukdwBjAUZtLb5AcskIegwAjNZrsigzZ81W9MdRzh0BgKNiUZHT29MlC3l2fXJ82DBosicwjhlHQUmRK05CRF3u9naQsm0FQfTr6smai9FsOgAKVmrUs7nm9fpD35c3Fb9GrHdroOQBggixuIw4VdEzhLdIwJrsaursKPxb2qcEKGSGYX4+9jXE9O8+2bYQiYs4nDZKvOLM39KA877hLnSfajjntjbTHbuzq9biOOeqPaeXiA2V4uxA1lTQdgqgJwlKSxJ6EuSk4/FPbmHVAzsO9p8r/qaxqSDHG+QR7sSZyJyoYCYtK9DDipFXgjce+OC2flWmxZX4NjAc1T3fVHUvwUmqKQPBzTi/TruvNMVHIZKKwlTRa8tpGGRPbkRkePkZNvB06vwQcJFp0setCSIiIrdSQZpAZpEd7J+LD9gMtVnSyNtkxyQAPngSTXYuYo1GFJRl/G8apJoISIYEOgG7hYFsr5lGThdIkBtqqGEKfnoYVsgNvlIzeaEF+VzKmZn9FfoQ5s0NzIPhajo5Bl4rYidn9GQR1OE3pbTjWjSKcdxz0Cg7a9d0sGGlS2axsksxLfJaUdGLEQyG8SUbhcbfUtYgaOez6o8KRISpdDypY4UX0gnk3BZLW/yk0S645lRUPNDpxel0DOfNhYxMsG6m0ku8fnmEnFEmz2WeoxFAb79mH+yTNqKMVbrfn1+J0BuqIxihs97GLbVKoR0A8BLRz6101sIawKNf+HYhzu8Se5xHwIQKQ4/+jtH2PIZNY30l03GmqniyGPLMZini5ZJIjtRXcXAWeD2n7Nt3gOj+w2yz/6a1a6AIH9qBsAsmbkY6xqquqkLAXXI+qo41JjlqqitLHkp4Bh/hCjEOSah5MM7WaZ5ZRuZ+tqE5x4JLdL8jkC0hlDhHnjQmXU6DAK96XVWnD1OlrT6u5cT6/8yd5htN47bQwychfHvfoizh2b6dniqLzoQzk6nFp/b87irG3OeaMsToNPLJtHavIUjxVpuRixBbP1VpyySgsc5ZIpuHsM5VRuEAOOb9HDjjqNBUEUBwYryDeaoRBJ3m9dnK6DgjHHvRqugUe6YRTOVyDtuUcVNE72SmP7aznZu5bij1oVoxWjEFScPmtxq9MUygfFle3SXwfsts5Eg91q+QNRJVa+tIhsEJcrCXyMgFB3dALdiI0Wa0NC0N7oaduK/L/DaYhiCD/Y32HZzwPZbEWrohmT1M+OlCWj3io2EqcUJcpAozVJSOV2UGalPQonpHWFM5rJGw+bxwHolPtKTJ9l0sZhfJbxyJNKMo9iYfo6osa4eiGrbK/6Bdj2A4qj38nXDA/8Mx/6Rm3CkyCqjz7ARk8aRrOv0HBzKEDna/bPnQ2EzZSFr3dT1Jos/psgtpNubFX7xoa6eBq4oHZGoWhVKxF?v=11&pv=1",
+                                "signature": "A3ITRB/ToGllTmq88k+c+dLZ88uosanse5Mtyr65TMALA+VIBqKrXiPsz3sghRBziFpXGXucHcf9cfCGBwIwaZRuLcBOGIDHfQmmBcDYwmFMQ2AY5dtWW0MNrlU4FP7kkMuKxZgm3zb+wqnjkO42/bEsMhzS623PLL6Nz9lZNTM=",
+                                "templateUrl": "https://file-link.pinduoduo.com/zto_one",
+                                "userid": "480261061",
+                                "ver": "11"
+                            },
+                            {
+                                "data": {
+                                    "height": 240,
+                                    "list": [
+                                        {
+                                            "fontSize": 31.2,
+                                            "height": 45.68,
+                                            "left": 2.08,
+                                            "text": "[备注: 没有什么备注123]",
+                                            "top": 2.08,
+                                            "width": 413.52
+                                        }
+                                    ],
+                                    "waterdata": {
+                                        "text": ""
+                                    },
+                                    "width": 560
+                                },
+                                "templateURL": "http://pinduoduoimg.yangkeduo.com/logistics/2019-07-14/5d7e8b5969d954539fcfba3268bbeb3a.xml"
+                            }
+                        ],
+                        "documentID": "5520010649869215"
+                    }
+                ],
+                "notifyType": [
+                    "print"
+                ],
+                "preview": false,
+                "previewType": "image",
+                "printer": "",
+                "taskID": taskId
+            },
+            "version": "1.0"
+        };
+        this.socket.send(JSON.stringify(data));
+    }
+</script>
+
+<body>
+    <button onclick="getPrinterList()">获取打印机列表</button><br /><br />
+    <button onclick="print()">打印</button><br /><br /><br />
+    打印机列表：<label id="printerList" />
+</body>
+
+</html>
