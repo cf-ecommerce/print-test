@@ -21,6 +21,12 @@
         if (result.cmd == "getPrinters") {
             printerList = result.printers;
             document.getElementById("printerList").innerHTML = JSON.stringify(printerList)
+        } 
+        //打印成功回调
+        if (result.cmd == "PrintResultNotify") {
+            printerList = result.printers;
+            //ordersn=documentID
+            document.getElementById("printerList").innerHTML = JSON.stringify(printerList)
         }
     };
 
@@ -63,13 +69,26 @@
     function print() {
         console.log('开始打印！')
         let orderList = [
-            { orderSn: 'John', trackingNumber: '',templateUrl:'',userid:'' },
+            {
+                "orderSn": '240517-407419000370350',
+                "trackingNumber": 'tn-0091',
+                "sender": {
+                    "address": {
+                        "city": "上海市",
+                        "detail": "鄙视路2号",
+                        "district": "浦东新区",
+                        "province": "上海市"
+                    },
+                    "mobile": "15000100101",
+                    "name": "Edward X"
+                }
+            },
             { name: 'Doe', age: 25 },
             { name: 'Alice', age: 35 }
         ];
 
         var taskId = getRandomStr();
-        var requestId = generateUUID();
+        var requestId = getRandomStr();
 
         let data = {
             "ERPId": 303379400,
@@ -119,7 +138,7 @@
                                 "templateURL": "http://pinduoduoimg.yangkeduo.com/logistics/2019-07-14/5d7e8b5969d954539fcfba3268bbeb3a.xml"
                             }
                         ],
-                        "documentID": "5520010649869215"
+                        "documentID": "201-200303493883"
                     }
                 ],
                 "notifyType": [

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page height="1440" width="800">
+    <!--  标准模板  -->
+    <% function GetTel(tel){ %>
+    <% if(tel.length == 11){ %>
+    <% var tmp =tel.replace(tel.substring(3,7), "****"); %>
+    <% return tmp; %>
+    <% }else %>
+    <% return tel;%>
+    <%} %>
+    <%var recipientMobile = data.recipient ? (data.recipient.mobile || '') : '' %>
+    <%var recipientPhone =  data.recipient ? (data.recipient.phone || '') : '' %>
+    <%var senderMobile = data.sender ? (data.sender.mobile || '') : '' %>
+    <%var senderPhone =  data.sender ? (data.sender.phone || '') : '' %>
+    <%var recMB = GetTel(recipientMobile) %>
+    <%var recCel = GetTel(recipientPhone)  %>
+    <%var senderMB = GetTel(senderMobile) %>
+    <%var senderCel =  GetTel(senderPhone) %>
+    <%var DatabigShotName = data.routingInfo ? (data.routingInfo.bigShotName || '') : '' %>
+    <%var DataThreeSegmentCode = data.routingInfo ? (data.routingInfo.threeSegmentCode || '') : '' %>
+    <%var threeSegmentCodeFormt = DataThreeSegmentCode.replace(/-/g, ' ') %>
+    <%var DataBigShotCode = data.routingInfo ? (data.routingInfo.bigShotCode || '') : '' %>
+    <% if(threeSegmentCodeFormt.substring(0,DataBigShotCode.length) == DataBigShotCode){ %>
+    <% threeSegmentCodeFormt =threeSegmentCodeFormt.substring(DataBigShotCode.length,threeSegmentCodeFormt.length); %>
+    <% }%>
+    <%var bigShotCodeFormt = DataBigShotCode.replace(/-/g, ' ') %>
+    <%var WaterNumber =bigShotCodeFormt.split(' ')[0] + threeSegmentCodeFormt.split(' ')[0] %>
+    <!--  水印  -->
+    <waterrmark name="WaterNumber" value="<%=WaterNumber%>" top="300" height="300" left="70" fontFamily="Arial" fontSize="200" type="0" fontWeight="bold"  Alpha="90" />
+    <!--  logo 标准快递  -->
+    <layout height="112" width="800" bordersize="0,0,0,2">
+        <layout width="240">
+            <% if(context.topLogo) {%>
+            <image name="logo" type="1" width="208" height="80" top="16" value="https://funimg.pddpic.com/print_template/png/3e27304807f18161bb2c05f95217d1d7.png" left="5"/>
+            <% } %>
+        </layout>
+        <layout width="160" left="640">
+            <text value="标准&#x000A;快递" height="112" width="200" top="12" fontSize="50" align="center"/>
+        </layout>
+    </layout>
+    <!--  三段码+大头笔  -->
+    <layout height="120" width="800" top="112" bordersize="0,0,0,2">
+        <text name="Bigpen" value="<%=DataThreeSegmentCode ? DataThreeSegmentCode : DatabigShotName %>" top="15" align="center" fontSize="90" fontWeight="bold" />
+    </layout>
+    <!--  集包地 + 条形码  -->
+    <layout height="80" width="800" top="232" bordersize="0,0,0,2">
+        <layout width="80">
+            <image name="集" width="64" height="64" left="14" top="12" />
+        </layout>
+        <layout width="440" left="80" height="80">
+            <text name="JiBaoDi" value="<%=data.routingInfo ? (data.routingInfo.endBranchName || '') : ''%>" height="80" width="440" top="20" fontSize="48" fontWeight="bold" align="left" valign="center" />
+        </layout>
+        <layout width="280" left="520">
+            <text name="BARCodeJiBaoDi" value="<%=data.routingInfo ? (data.routingInfo.endBranchCode || '') : ''%>" width="240" height="64" top="20" fontSize="48" align="center"  valign="center" />
+        </layout>
+    </layout>
+    <!--  收件人信息  -->
+    <layout height="120" width="800" top="312" bordersize="0,0,0,2">
+        <layout width="80">
+            <image name="收" height="63" width="56"  top="25" left="16" />
+        </layout>
+        <layout width="720" left="80">
+            <text name="ReceiverInfo" value="<%=data.recipient ? (data.recipient.name || '') : ''%>
+                <%= (recipientMobile == recipientPhone) ? recipientMobile : (recipientMobile +' '+ recipientPhone)%> &#x000A;<%=(data.recipient && data.recipient.address) ? (data.recipient.address.province || '') : ''%>
+                <%=(data.recipient && data.recipient.address) ? (data.recipient.address.city || '') : ''%>
+                <%=(data.recipient && data.recipient.address) ? (data.recipient.address.district || '') : ''%>
+                <%=(data.recipient && data.recipient.address) ? (data.recipient.address.town || '') : ''%>
+                <%=(data.recipient && data.recipient.address) ? (data.recipient.address.detail || '') : ''%>"
+    fontSize="28" top="16" align="left" valign="center"/>
+            </layout>
+        </layout>
+        <!--  寄件人信息  -->
+        <layout height="96" width="800" top="432" bordersize="0,0,0,2">
+            <layout width="80" left="0">
+                <text value="寄" left="8" fontSize="55" align="center" top="15" />
+            </layout>
+            <layout width="720" left="80">
+                <text name="SenderInfo" value="<%=data.sender ? (data.sender.name || '') : ''%>
+                    <%= (senderMobile == senderPhone) ? senderMobile : (senderMobile +' '+ senderPhone)%> &#x000A;<%=(data.sender && data.sender.address) ? (data.sender.address.province || '') : ''%>
+                    <%=(data.sender && data.sender.address) ? (data.sender.address.city || '') : ''%>
+                    <%=(data.sender && data.sender.address) ? (data.sender.address.district || '') : ''%>
+                    <%=(data.sender && data.sender.address) ? (data.sender.address.town || '') : ''%>
+                    <%=(data.sender && data.sender.address) ? (data.sender.address.detail || '') : ''%>"
+   fontSize="25" top="16" align="left" valign="center" />
+                </layout>
+            </layout>
+            <!--  运单 + 条码  -->
+            <layout height="184" width="800" top="528" bordersize="0,0,0,2">
+                <barcode name="YunDanBarCode" value="<%=data.waybillCode || ''%>" type="code128b" height="120" width="600" top="16" left="100" />
+                <text name="YunDanText" height="46" value="<%=data.waybillCode || ''%>" top="138" align="center" fontSize="42" />
+            </layout>
+            <!--  打印时间 + 签收 + 二维码  -->
+            <layout height="160" width="800" top="712">
+                <layout width="160" bordersize="0,0,2,0">
+                    <image name="时钟" height="32" width="32" left="14" top="15" />
+                    <text height="32" top="18" left="52" align="left" fontSize="23" value="打印时间" />
+                    <text name="printdate"  value="<%=context.date || ''%>"  height="32" top="50"  align="center" fontSize="23" />
+                    <text name="printindex" value="<%=context.index || ''%>" height="40" top="85" align="center" fontSize="38" />
+                    <text name="printtime" value="<%=context.time || ''%>" height="40" top="120" align="center" fontSize="34" />
+                </layout>
+                <layout width="640" left="160" bordersize="0,0,2,0">
+                    <text top="16" left="8" fontSize="20" value="快件送达收件人地址，经收件人或收件人（寄件人）允许的代收人签字，视为送达。您的签字代表您已验收此包裹，并已确认商品信息无误、包装完好、没有划痕、破损等表面质量问题" align="left" />
+                    <text height="40" top="128" width="550" left="8" value="签收栏" fontSize="30" align="right" />
+                    <image name="铅笔" height="32" width="32" left="568" top="128" />
+                </layout>
+                <image name="撕角" height="32" width="32" left="768" top="128" />
+            </layout>
+            <!--  切线  -->
+            <layout height="2" width="800" top="872">
+                <line />
+            </layout>
+            <!--  logo + 运单 + 条码  -->
+            <layout height="92" width="800" top="874" bordersize="0,0,0,2">
+                <layout width="240">
+                    <% if(context.bottomLogo) {%>
+                    <image name="logo" type="1" width="208" height="80" top="6" value="https://funimg.pddpic.com/print_template/png/3e27304807f18161bb2c05f95217d1d7.png" left="5"/>
+                    <% } %>
+                </layout>
+                <layout width="560" left="240">
+                    <barcode name="YunDanBarCode" value="<%=data.waybillCode || ''%>" type="code128b" height="62" width="450" top="5" left="38" />
+                    <text name="YunDanText" value="<%=data.waybillCode || ''%>" height="25" top="67" align="center" valign="center" fontFamily="Arial" fontSize="25"   />
+                </layout>
+            </layout>
+            <layout height="74" top="966" orientation="horizontal" bordersize="0,0,0,2">
+                <!--  收件人信息  -->
+                <layout width="80">
+                    <image name="收" height="63" width="56" left="16" top="8" />
+                </layout>
+                <layout width="480">
+                    <text name="ReceiverInfo" value="<%=data.recipient ? (data.recipient.name || '') : ''%>
+                        <%= (recipientMobile == recipientPhone) ? recMB : (recMB +' '+ recCel)%> &#x000A;<%=(data.recipient && data.recipient.address) ? (data.recipient.address.province || '') : ''%>
+                        <%=(data.recipient && data.recipient.address) ? (data.recipient.address.city || '') : ''%>
+                        <%=(data.recipient && data.recipient.address) ? (data.recipient.address.district || '') : ''%>
+                        <%=(data.recipient && data.recipient.address) ? (data.recipient.address.town || '') : ''%>
+                        <%=(data.recipient && data.recipient.address) ? (data.recipient.address.detail || '') : ''%>"
+    fontSize="20" top="16" align="left" valign="center"/>
+                    </layout>
+                    <layout width="80" bordersize="2,0,0,0" >
+                        <text value="寄" left="8" fontSize="55" align="center" top="15" />
+                    </layout>
+                    <layout width="160" >
+                        <text name="SenderInfo" value="<%=data.sender ? (data.sender.name || '') : ''%>
+                            <%= (senderMobile == senderPhone) ? senderMobile : (senderMobile +' '+ senderPhone)%> &#x000A;<%=(data.sender && data.sender.address) ? (data.sender.address.province || '') : ''%>
+                            <%=(data.sender && data.sender.address) ? (data.sender.address.city || '') : ''%>
+                            <%=(data.sender && data.sender.address) ? (data.sender.address.district || '') : ''%>"
+fontSize="25" top="16" align="left" valign="center" />
+                        </layout>
+                    </layout>
+                    <!--  自定义  -->
+                    <layout name="user" height="240" width="800" top="1040">
+                        <text height="40" top="202" width="120" left="680" value="已验视" fontSize="28" align="center" />
+                    </layout>
+                    <layout height="160" bordersize="0,2,0,0" orientation="horizontal" top="1280" >
+                        <%if(context.adControl && data.ad && data.ad.pic && data.ad.pic != ''){%>
+                        <layout width="600" >
+                            <image name="AdArea" value="<%=data.ad.pic%>"  width="592" height="158" padding="16,16,16,16" />
+                        </layout>
+                        <%}%>
+                        <layout width="160" height="160" >
+                            <qrcode   name="AdArea" value="<%=(context.adControl && data.ad) ? (data.ad.qrCode || '') : ''%>" padding="8,8,8,8" />
+                        </layout>
+                    </layout>
+                </page>
